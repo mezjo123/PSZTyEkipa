@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -9,6 +11,15 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("testst");
-        Okno okno = new Okno();
+        Obraz moje = new Obraz("huj.bmp");
+        try {
+            moje.wyswietlINT();
+            moje.testowe();
+        } catch (FileNotFoundException e) {
+            System.out.println( "\n Nie ma takiego pliku \n");
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

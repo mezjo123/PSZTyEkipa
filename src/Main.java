@@ -1,6 +1,5 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by Marzuz on 2014-11-03.
@@ -11,10 +10,12 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("testst");
-        Obraz moje = new Obraz("huj.bmp");
+        Obraz moje = new Obraz("lena.jpg");
         try {
-            moje.wyswietlINT();
-            moje.testowe();
+            moje.inicjalizuj();
+            //moje.testowe();
+            moje.generujNowyObraz(0.5);
+
         } catch (FileNotFoundException e) {
             System.out.println( "\n Nie ma takiego pliku \n");
             e.printStackTrace();

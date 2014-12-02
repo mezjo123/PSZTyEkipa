@@ -10,11 +10,11 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("testst");
-        Obraz moje = new Obraz("lena.jpg");
+        Obraz moje = new Obraz("lena.jpg"); // tworzenie obrazu
         try {
-            moje.inicjalizuj();
+            moje.inicjalizuj(); // inicjalizacja obiektu
             //moje.testowe();
-            moje.generujNowyObraz(0.5);
+            moje.generujNowyObraz(0.5);// wlasciwa czesc
 
         } catch (FileNotFoundException e) {
             System.out.println( "\n Nie ma takiego pliku \n");

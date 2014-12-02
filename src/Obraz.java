@@ -45,21 +45,23 @@ public class Obraz {
         System.out.println("[ "+getR(s)+" "+getG(s)+" "+getB(s)+" ]\n");
     }
     public void generujNowyObraz(double r){
-        int x=0, y=0;
+        int x=0, y=0; // przegladamy kazdy pixel po kolei
         while (y<obrazekWejsciowy.getHeight()){
             while (x<obrazekWejsciowy.getWidth()){
+                // chcemy uzyskac nowa wartosc pixela dla nowego obrazka
                 int red = wyznaczPixelNowegoObrazka(x,y,Kolor.Red,r);
                 int green = wyznaczPixelNowegoObrazka(x,y,Kolor.Green,r);
                 int blue = wyznaczPixelNowegoObrazka(x,y,Kolor.Blue,r);
                 int kolor = toRGB(red,green,blue);
-                obrazekWyjsciowy.setRGB(x,y,kolor);
+                obrazekWyjsciowy.setRGB(x,y,kolor); // zapisujemy do nowego obrazka
                 ++x;
             }
             ++y;
             x=0;
         }
         try {
-            ImageIO.write(obrazekWyjsciowy, "jpeg", new File("out3.jpg"));
+            // zapisujemy nowopowstaly obrazek
+            ImageIO.write(obrazekWyjsciowy, "jpeg", new File("testOUT2.jpg"));
             System.out.println("\nObraz zostal wygenerowany...");
         } catch (IOException e) {
             System.out.println("\nNie udalo sie zapisac nowego obrazka");
@@ -68,17 +70,19 @@ public class Obraz {
     }
 
     private int wyznaczPixelNowegoObrazka(int x, int y, Kolor kolor, double r ){
-        List<Pixel> listaSasiadow = new LinkedList<Pixel>();
+        List<Pixel> listaSasiadow = new LinkedList<Pixel>(); // lista do przechowywania roznic
         listaSasiadow.clear();
         double wartoscKoloru;
         double wartoscKoloruSasiada;
         int ileSasiadow = 0;
         double MAXmodul = 0;
         double sumaSasaidow = 0;
-        double wsp =255;
+        double wsp = 1; // nic nie wnosi
 
-        wartoscKoloru = wydobadzKolor(x,y,kolor)/wsp;
+        wartoscKoloru = wydobadzKolor(x,y,kolor)/wsp; // wartosc koloru srodkowego
 
+        // rozpatrujemy teraz pokolei istniejacych sasiadow, jezeli jakis nalezy do dziedziny
+        // wyznaczmy roznice miedzy nim a centrum, po czym zapisujemy do listy
         //1 [ x-1, y ]
         if(czyWspolrzedneNalezaDoDziedziny(x-1,y)){
             ++ileSasiadow;
@@ -127,33 +131,44 @@ public class Obraz {
             wartoscKoloruSasiada = wydobadzKolor(x-1,y-1,kolor)/wsp;
             listaSasiadow.add(new Pixel(wartoscKoloru-wartoscKoloruSasiada ));
         }
+        // wyznaczamy wsrod sasiadow maxymalna rozbierznosc
         for (Pixel roznica : listaSasiadow) {
             if(Math.abs(roznica.kolor) > MAXmodul)
                 MAXmodul = Math.abs(roznica.kolor);
         }
 
+        // jezeli pixele maja ten sam kolor, pozostawiamy ten sam
         if(MAXmodul == 0)
             return wydobadzKolor(x,y,kolor);
 
+        // 1.dzielenie przez MAX aby uzyskac pelne mi
+        // 2.wyznaczanie GFO na podstawie mi
+        // 3. podzielenie wyniku przez liczbe sasiadow
         for (Pixel roznica : listaSasiadow) {
-            roznica.kolor /= MAXmodul*255;
-            roznica.kolor /= ileSasiadow;
+            roznica.kolor = -roznica.kolor;
+            roznica.kolor /=  220;
             try {
                 roznica.kolor = -gfo(roznica.kolor,r);
             } catch (BadRangeException e) {
                 e.printStackTrace();
             }
+            roznica.kolor /= ileSasiadow;
         }
+        //suma zgodna z algorytmem
         for (Pixel wartoscPixelaSasiedniego : listaSasiadow) {
             sumaSasaidow += wartoscPixelaSasiedniego.kolor;
         }
-        sumaSasaidow = sumaSasaidow * 255;
 //        try {
 //            sumaSasaidow = -gfo(sumaSasaidow,r);
 //        } catch (BadRangeException e) {
 //            e.printStackTrace();
 //        }
-        return wydobadzKolor(x,y,kolor) - (int)sumaSasaidow;
+        sumaSasaidow = sumaSasaidow * 120;
+        int wynik = wydobadzKolor(x,y,kolor) + (int)sumaSasaidow;
+        if(wynik > 40 && wynik <240)
+            return wynik;
+        else
+            return wydobadzKolor(x,y,kolor);
     }
 
     private boolean czyWspolrzedneNalezaDoDziedziny(int x, int y){
@@ -173,6 +188,7 @@ public class Obraz {
         return 0;
     }
 
+    //funkcja GFO
     private double gfo(double x,double r) throws BadRangeException {
         if(x>1||x<-1)
             throw new BadRangeException();
@@ -184,7 +200,7 @@ public class Obraz {
         }
     }
 
-
+    // nie uzywane, kozystalismy przy innej koncepcji
     private class Pixel{
         public double kolor;
         public Pixel(final double kolor){

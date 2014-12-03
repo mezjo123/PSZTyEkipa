@@ -40,10 +40,6 @@ public class Obraz {
         return (int)((((r << 8)|g) << 8)|b);
     }
 
-    public void testowe(){
-        int s = obrazekWejsciowy.getRGB(0,0);
-        System.out.println("[ "+getR(s)+" "+getG(s)+" "+getB(s)+" ]\n");
-    }
     public void generujNowyObraz(double r){
         int x=0, y=0; // przegladamy kazdy pixel po kolei
         while (y<obrazekWejsciowy.getHeight()){
@@ -61,7 +57,7 @@ public class Obraz {
         }
         try {
             // zapisujemy nowopowstaly obrazek
-            ImageIO.write(obrazekWyjsciowy, "jpeg", new File("testOUT2.jpg"));
+            ImageIO.write(obrazekWyjsciowy, "jpeg", new File("lenaOUT.jpg"));
             System.out.println("\nObraz zostal wygenerowany...");
         } catch (IOException e) {
             System.out.println("\nNie udalo sie zapisac nowego obrazka");
@@ -79,6 +75,7 @@ public class Obraz {
         double sumaSasaidow = 0;
         double wsp = 1; // nic nie wnosi
 
+        //mala poprawka
         wartoscKoloru = wydobadzKolor(x,y,kolor)/wsp; // wartosc koloru srodkowego
 
         // rozpatrujemy teraz pokolei istniejacych sasiadow, jezeli jakis nalezy do dziedziny
@@ -146,7 +143,7 @@ public class Obraz {
         // 3. podzielenie wyniku przez liczbe sasiadow
         for (Pixel roznica : listaSasiadow) {
             roznica.kolor = -roznica.kolor;
-            roznica.kolor /=  220;
+            roznica.kolor /=  255;
             try {
                 roznica.kolor = -gfo(roznica.kolor,r);
             } catch (BadRangeException e) {
@@ -158,11 +155,6 @@ public class Obraz {
         for (Pixel wartoscPixelaSasiedniego : listaSasiadow) {
             sumaSasaidow += wartoscPixelaSasiedniego.kolor;
         }
-//        try {
-//            sumaSasaidow = -gfo(sumaSasaidow,r);
-//        } catch (BadRangeException e) {
-//            e.printStackTrace();
-//        }
         sumaSasaidow = sumaSasaidow * 120;
         int wynik = wydobadzKolor(x,y,kolor) + (int)sumaSasaidow;
         if(wynik > 40 && wynik <240)
